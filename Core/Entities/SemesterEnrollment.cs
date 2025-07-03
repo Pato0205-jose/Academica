@@ -23,10 +23,10 @@ namespace InscripcionUniAPI.Core.Entities
         // Navegación
         public Student? Student { get; set; }
 
-        public ICollection<SemesterCourse> Courses { get; set; } = new List<SemesterCourse>();
+        public ICollection<SemesterEnrollmentCourse> Courses { get; set; } = new List<SemesterEnrollmentCourse>();
     }
 
-    public class SemesterCourse
+    public class SemesterEnrollmentCourse
     {
         public int Id { get; set; }
 
