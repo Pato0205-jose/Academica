@@ -33,40 +33,65 @@ namespace InscripcionUniAPI.Controllers
         [HttpPost]
         public async Task<IActionResult> Post(StudentDto studentDto)
         {
-            var student = new Student
+            try
             {
-                Matriculation = studentDto.Matriculation,
-                FirstName = studentDto.FirstName,
-                LastName = studentDto.LastName,
-                Email = studentDto.Email,
-                CreatedAt = DateTime.UtcNow
-            };
+                var student = new Student
+                {
+                    Matriculation = studentDto.Matriculation,
+                    FirstName = studentDto.FirstName,
+                    LastName = studentDto.LastName,
+                    Email = studentDto.Email,
+                    CreatedAt = DateTime.UtcNow
+                };
 
-            var created = await _service.CreateAsync(student);
-            return CreatedAtAction(nameof(Get), new { id = created.Id }, created);
+                var created = await _service.CreateAsync(student);
+                return CreatedAtAction(nameof(Get), new { id = created.Id }, created);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> Put(int id, StudentDto studentDto)
         {
-            var student = new Student
+            try
             {
-                Id = id,
-                Matriculation = studentDto.Matriculation,
-                FirstName = studentDto.FirstName,
-                LastName = studentDto.LastName,
-                Email = studentDto.Email
-            };
+                var student = new Student
+                {
+                    Id = id,
+                    Matriculation = studentDto.Matriculation,
+                    FirstName = studentDto.FirstName,
+                    LastName = studentDto.LastName,
+                    Email = studentDto.Email
+                };
 
-            var updated = await _service.UpdateAsync(id, student);
-            return Ok(updated);
+                var updated = await _service.UpdateAsync(id, student);
+                return Ok(updated);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            await _service.DeleteAsync(id);
-            return NoContent();
+            try
+            {
+                await _service.DeleteAsync(id);
+                return NoContent();
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
     }
 }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 
 namespace InscripcionUniAPI.Core.Entities
 {
@@ -23,5 +24,22 @@ namespace InscripcionUniAPI.Core.Entities
         // Navegación
         public Student? Student { get; set; }
         public ICollection<EnrolledCourse> Courses { get; set; } = new List<EnrolledCourse>();
+
+        // Métodos de dominio
+        public bool CanAddCourse(int newCourseCreditHours)
+        {
+            var currentTotalCredits = Courses.Sum(c => c.CreditHours);
+            return (currentTotalCredits + newCourseCreditHours) <= MaxCreditHours;
+        }
+
+        public int GetCurrentCreditHours()
+        {
+            return Courses.Sum(c => c.CreditHours);
+        }
+
+        public int GetRemainingCreditHours()
+        {
+            return MaxCreditHours - GetCurrentCreditHours();
+        }
     }
 }

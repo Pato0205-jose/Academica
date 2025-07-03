@@ -39,10 +39,19 @@ namespace InscripcionUniAPI.Controllers
         [HttpPost("{semesterId:int}/courses/{courseId:int}")]
         public async Task<IActionResult> AddCourse(int studentId, int semesterId, int courseId)
         {
-            var semester = await _service.AddCourseAsync(semesterId, courseId);
-            return semester is null
-                ? NotFound()
-                : Ok(semester);
+            try
+            {
+                var semester = await _service.AddCourseAsync(semesterId, courseId);
+                return Ok(semester);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
     }
 }

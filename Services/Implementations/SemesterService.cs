@@ -56,11 +56,22 @@ namespace InscripcionUniAPI.Services.Implementations
                 .FirstOrDefaultAsync(se => se.Id == semesterId);
 
             if (semester == null)
-                return null;
+                throw new KeyNotFoundException($"Semester with id {semesterId} not found.");
 
             var course = await _context.Courses.FindAsync(courseId);
             if (course == null)
-                return null;
+                throw new KeyNotFoundException($"Course with id {courseId} not found.");
+
+            // Validación de dominio: verificar que no se exceda el límite de créditos
+            if (!semester.CanAddCourse(course.CreditHours))
+            {
+                var currentCredits = semester.GetCurrentCreditHours();
+                var remainingCredits = semester.GetRemainingCreditHours();
+                throw new InvalidOperationException(
+                    $"No se puede agregar el curso '{course.Name}' ({course.CreditHours} créditos). " +
+                    $"Créditos actuales: {currentCredits}, Límite: {semester.MaxCreditHours}, " +
+                    $"Créditos disponibles: {remainingCredits}");
+            }
 
             // Crear la relación entre semestre y curso
             var enrolledCourse = new EnrolledCourse
