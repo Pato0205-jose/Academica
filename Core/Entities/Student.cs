@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 namespace InscripcionUniAPI.Core.Entities
 {
     [Index(nameof(Matriculation), IsUnique = true)]
-    [Index(nameof(Email), IsUnique = true)]
+    [Index(nameof(Email),        IsUnique = true)]
     public class Student
     {
         public int Id { get; set; }
@@ -23,5 +23,8 @@ namespace InscripcionUniAPI.Core.Entities
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
+        // ⭐  Navegación necesaria para StudentService
+        public ICollection<SemesterEnrollment> SemesterEnrollments { get; set; }
+            = new List<SemesterEnrollment>();
     }
 }
