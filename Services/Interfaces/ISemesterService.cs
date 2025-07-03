@@ -1,4 +1,4 @@
-using InscripcionUniAPI.Core.Dtos;
+using InscripcionUniAPI.Core.DTOs;
 using InscripcionUniAPI.Core.Entities;
 using System.Threading.Tasks;
 

@@ -1,10 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-<<<<<<< HEAD
 namespace InscripcionUniAPI.Core.DTOs
-=======
-namespace InscripcionUniAPI.Core.Dtos
->>>>>>> 8dfe60f3f6676b7b6824560c9e3969130bd59001
 {
     public class StartSemesterDto
     {
@@ -18,8 +14,4 @@ namespace InscripcionUniAPI.Core.Dtos
         [Required]
         public int MaxCreditHours { get; set; }
     }
-<<<<<<< HEAD
-} 
-=======
 }
->>>>>>> 8dfe60f3f6676b7b6824560c9e3969130bd59001

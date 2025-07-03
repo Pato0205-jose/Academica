@@ -11,22 +11,12 @@ namespace InscripcionUniAPI.Data
     {
         public static async Task SeedAsync(UniversityDbContext db)
         {
-            if (await db.SemesterCourses.AnyAsync())
+            if (await db.EnrolledCourses.AnyAsync())
                 return;
 
             List<EnrolledCourse> enrolledCourses = GetEnrolledCourses();
 
-            var semesterCourses = enrolledCourses
-                .Select(ec => new SemesterCourse
-                {
-                    Id = ec.Id,
-                    CourseId = ec.CourseId,
-                    SemesterEnrollmentId = ec.SemesterEnrollmentId,
-                    CreditHours = ec.CreditHours,
-                })
-                .ToList();
-
-            await db.SemesterCourses.AddRangeAsync(semesterCourses);
+            await db.EnrolledCourses.AddRangeAsync(enrolledCourses);
             await db.SaveChangesAsync();
         }
 
