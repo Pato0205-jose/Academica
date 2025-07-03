@@ -23,6 +23,5 @@ namespace InscripcionUniAPI.Core.Entities
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-        public List<SemesterEnrollment> SemesterEnrollments { get; set; } = new();
     }
 }
