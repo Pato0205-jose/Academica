@@ -16,7 +16,7 @@ namespace InscripcionUniAPI.Controllers
         public async Task<IActionResult> Get(int page = 1, int size = 10)
         {
             var result = await _service.GetPagedAsync(page, size);
-            Response.Headers.Add("X-Total-Count", result.TotalCount.ToString());
+            Response.Headers["X-Total-Count"] = result.TotalCount.ToString();
             return Ok(result.Items);
         }
 

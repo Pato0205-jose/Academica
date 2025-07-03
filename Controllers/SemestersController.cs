@@ -20,7 +20,7 @@ namespace InscripcionUniAPI.Controllers
         }
 
         [HttpGet("{semesterId:int}")]
-        public async Task<IActionResult> GetSemester(int semesterId)
+        public async Task<IActionResult> GetSemester(int studentId, int semesterId)
         {
             var semester = await _service.GetByIdAsync(semesterId);
             return semester is null ? NotFound() : Ok(semester);
