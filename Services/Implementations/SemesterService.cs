@@ -1,3 +1,4 @@
+using InscripcionUniAPI.Core.Dtos;
 using InscripcionUniAPI.Core.Entities;
 using InscripcionUniAPI.Data;
 using InscripcionUniAPI.Services.Interfaces;
@@ -15,35 +16,65 @@ namespace InscripcionUniAPI.Services.Implementations
             _context = context;
         }
 
-        public async Task<SemesterEnrollment> StartSemesterAsync(int studentId, SemesterEnrollment semester)
+        public async Task<SemesterEnrollmentResponseDto> StartSemesterAsync(int studentId, StartSemesterDto dto)
         {
-            // Validar que el estudiante existe
             var student = await _context.Students.FindAsync(studentId);
             if (student == null)
                 throw new KeyNotFoundException($"Student with id {studentId} not found.");
 
-            // Asociar el studentId al semestre
-            semester.StudentId = studentId;
+            var semester = new SemesterEnrollment
+            {
+                StudentId = studentId,
+                Year = dto.Year,
+                Term = dto.Term,
+                MaxCreditHours = dto.MaxCreditHours
+            };
 
-            // Guardar el nuevo semestre
             _context.SemesterEnrollments.Add(semester);
             await _context.SaveChangesAsync();
 
-            return semester;
+            return new SemesterEnrollmentResponseDto
+            {
+                Id = semester.Id,
+                StudentId = semester.StudentId,
+                Year = semester.Year,
+                Term = semester.Term,
+                MaxCreditHours = semester.MaxCreditHours,
+                Courses = new List<CourseDto>()
+            };
         }
 
-        public async Task<SemesterEnrollment?> GetByIdAsync(int semesterId)
-        {
-            return await _context.SemesterEnrollments
-                .Include(se => se.Courses)
-                    .ThenInclude(sc => sc.Course)
-                .FirstOrDefaultAsync(se => se.Id == semesterId);
-        }
-
-        public async Task<SemesterEnrollment?> AddCourseAsync(int semesterId, int courseId)
+        public async Task<SemesterEnrollmentResponseDto?> GetByIdAsync(int semesterId)
         {
             var semester = await _context.SemesterEnrollments
                 .Include(se => se.Courses)
+                    .ThenInclude(sc => sc.Course)
+                .FirstOrDefaultAsync(se => se.Id == semesterId);
+
+            if (semester == null) return null;
+
+            return new SemesterEnrollmentResponseDto
+            {
+                Id = semester.Id,
+                StudentId = semester.StudentId,
+                Year = semester.Year,
+                Term = semester.Term,
+                MaxCreditHours = semester.MaxCreditHours,
+                Courses = semester.Courses.Select(c => new CourseDto
+                {
+                    Id = c.Course.Id,
+                    Code = c.Course.Code,
+                    Name = c.Course.Name,
+                    CreditHours = c.Course.CreditHours
+                }).ToList()
+            };
+        }
+
+        public async Task<SemesterEnrollmentResponseDto?> AddCourseAsync(int semesterId, int courseId)
+        {
+            var semester = await _context.SemesterEnrollments
+                .Include(se => se.Courses)
+                    .ThenInclude(sc => sc.Course)
                 .FirstOrDefaultAsync(se => se.Id == semesterId);
 
             if (semester == null)
@@ -53,7 +84,6 @@ namespace InscripcionUniAPI.Services.Implementations
             if (course == null)
                 throw new KeyNotFoundException($"Course with id {courseId} not found.");
 
-            // Aquí asumes que tienes una entidad puente entre semestre y curso, como SemesterCourse
             var semesterCourse = new SemesterCourse
             {
                 SemesterEnrollmentId = semesterId,
@@ -61,10 +91,26 @@ namespace InscripcionUniAPI.Services.Implementations
                 CreditHours = course.CreditHours
             };
 
-            _context.SemesterCourse.Add(semesterCourse);
+            _context.SemesterCourses.Add(semesterCourse);
             await _context.SaveChangesAsync();
 
-            return semester;
+            semester.Courses.Add(semesterCourse); // Para reflejar el cambio en la respuesta
+
+            return new SemesterEnrollmentResponseDto
+            {
+                Id = semester.Id,
+                StudentId = semester.StudentId,
+                Year = semester.Year,
+                Term = semester.Term,
+                MaxCreditHours = semester.MaxCreditHours,
+                Courses = semester.Courses.Select(c => new CourseDto
+                {
+                    Id = c.Course.Id,
+                    Code = c.Course.Code,
+                    Name = c.Course.Name,
+                    CreditHours = c.Course.CreditHours
+                }).ToList()
+            };
         }
     }
 }
