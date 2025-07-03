@@ -1,6 +1,6 @@
-namespace InscripcionUniAPI.Core.Dtos
+namespace InscripcionUniAPI.Dtos
 {
-    public class StartSemesterDto
+    public class SemesterEnrollmentDto
     {
         public int Year { get; set; }
         public string Term { get; set; } = string.Empty;

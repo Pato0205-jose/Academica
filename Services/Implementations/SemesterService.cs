@@ -61,7 +61,7 @@ namespace InscripcionUniAPI.Services.Implementations
                 CreditHours = course.CreditHours
             };
 
-            _context.SemesterCourses.Add(semesterCourse);
+            _context.SemesterCourse.Add(semesterCourse);
             await _context.SaveChangesAsync();
 
             return semester;
