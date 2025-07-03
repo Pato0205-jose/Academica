@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace InscripcionUniAPI.Core.Entities
 {
@@ -6,15 +8,40 @@ namespace InscripcionUniAPI.Core.Entities
     {
         public int Id { get; set; }
 
-        // FK al estudiante
+        [Required]
         public int StudentId { get; set; }
 
-        public ushort Year { get; set; }          // 2023, 2024, 2025…
-        public string Term { get; set; } = null!; // "Primavera", "Otoño", etc.
-        public byte MaxCreditHours { get; set; } = 21;
+        [Required]
+        public int Year { get; set; }
 
-        // Propiedades de navegación
+        [Required, StringLength(20)]
+        public string Term { get; set; } = default!;
+
+        [Required]
+        public int MaxCreditHours { get; set; }
+
+        // Navegación
         public Student? Student { get; set; }
-        public List<EnrolledCourse> Courses { get; set; } = new();
+
+        public ICollection<SemesterCourse> Courses { get; set; } = new List<SemesterCourse>();
+    }
+
+    public class SemesterCourse
+    {
+        public int Id { get; set; }
+
+        [Required]
+        public int SemesterEnrollmentId { get; set; }
+
+        [Required]
+        public int CourseId { get; set; }
+
+        [Required]
+        public int CreditHours { get; set; }
+
+        // Navegación
+        public SemesterEnrollment? SemesterEnrollment { get; set; }
+
+        public Course? Course { get; set; }
     }
 }

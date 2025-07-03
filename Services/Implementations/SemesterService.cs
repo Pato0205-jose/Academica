@@ -1,59 +1,70 @@
 using InscripcionUniAPI.Core.Entities;
+using InscripcionUniAPI.Data;
 using InscripcionUniAPI.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
 
 namespace InscripcionUniAPI.Services.Implementations
 {
     public class SemesterService : ISemesterService
     {
-        private readonly Data.UniversityDbContext _db;
+        private readonly UniversityDbContext _context;
 
-        public SemesterService(Data.UniversityDbContext db) => _db = db;
+        public SemesterService(UniversityDbContext context)
+        {
+            _context = context;
+        }
 
-        // Crea un semestre para el estudiante indicado
         public async Task<SemesterEnrollment> StartSemesterAsync(int studentId, SemesterEnrollment semester)
         {
+            // Validar que el estudiante existe
+            var student = await _context.Students.FindAsync(studentId);
+            if (student == null)
+                throw new KeyNotFoundException($"Student with id {studentId} not found.");
+
+            // Asociar el studentId al semestre
             semester.StudentId = studentId;
-            _db.SemesterEnrollments.Add(semester);
-            await _db.SaveChangesAsync();
+
+            // Guardar el nuevo semestre
+            _context.SemesterEnrollments.Add(semester);
+            await _context.SaveChangesAsync();
+
             return semester;
         }
 
-        // Agrega un curso existente a un semestre existente
-        public async Task<EnrolledCourse> AddCourseAsync(int semesterId, int courseId)
+        public async Task<SemesterEnrollment?> GetByIdAsync(int semesterId)
         {
-            // Obtener semestre con sus cursos
-            var semester = await _db.SemesterEnrollments
-                                    .Include(s => s.Courses)
-                                    .FirstOrDefaultAsync(s => s.Id == semesterId)
-                            ?? throw new KeyNotFoundException("Semestre no encontrado");
+            return await _context.SemesterEnrollments
+                .Include(se => se.Courses)
+                    .ThenInclude(sc => sc.Course)
+                .FirstOrDefaultAsync(se => se.Id == semesterId);
+        }
 
-            // Verificar que el curso exista
-            var course = await _db.Courses.FindAsync(courseId)
-                         ?? throw new KeyNotFoundException("Curso no encontrado");
+        public async Task<SemesterEnrollment?> AddCourseAsync(int semesterId, int courseId)
+        {
+            var semester = await _context.SemesterEnrollments
+                .Include(se => se.Courses)
+                .FirstOrDefaultAsync(se => se.Id == semesterId);
 
-            // Evitar duplicar el mismo curso en el semestre
-            if (semester.Courses.Any(c => c.CourseId == courseId))
-                throw new InvalidOperationException("El curso ya está inscrito en este semestre.");
+            if (semester == null)
+                throw new KeyNotFoundException($"Semester with id {semesterId} not found.");
 
-            // Crear la inscripción
-            var enrolledCourse = new EnrolledCourse
+            var course = await _context.Courses.FindAsync(courseId);
+            if (course == null)
+                throw new KeyNotFoundException($"Course with id {courseId} not found.");
+
+            // Aquí asumes que tienes una entidad puente entre semestre y curso, como SemesterCourse
+            var semesterCourse = new SemesterCourse
             {
-                SemesterEnrollmentId = semester.Id,
-                CourseId = course.Id,
+                SemesterEnrollmentId = semesterId,
+                CourseId = courseId,
                 CreditHours = course.CreditHours
             };
 
-            semester.Courses.Add(enrolledCourse);
+            _context.SemesterCourses.Add(semesterCourse);
+            await _context.SaveChangesAsync();
 
-            await _db.SaveChangesAsync();
-            return enrolledCourse;
+            return semester;
         }
-
-        // Obtener semestre por Id con sus cursos
-        public async Task<SemesterEnrollment?> GetByIdAsync(int id) =>
-            await _db.SemesterEnrollments
-                     .Include(s => s.Courses)
-                     .FirstOrDefaultAsync(s => s.Id == id);
     }
 }

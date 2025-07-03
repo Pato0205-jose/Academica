@@ -1,3 +1,4 @@
+using InscripcionUniAPI.Core.Dtos;
 using InscripcionUniAPI.Core.Entities;
 using InscripcionUniAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -15,8 +16,16 @@ namespace InscripcionUniAPI.Controllers
         public SemestersController(ISemesterService service) => _service = service;
 
         [HttpPost]
-        public async Task<IActionResult> StartSemester(int studentId, SemesterEnrollment semester)
+        public async Task<IActionResult> StartSemester(int studentId, [FromBody] StartSemesterDto dto)
         {
+            var semester = new SemesterEnrollment
+            {
+                StudentId = studentId,
+                Year = dto.Year,
+                Term = dto.Term,
+                MaxCreditHours = dto.MaxCreditHours
+            };
+
             var result = await _service.StartSemesterAsync(studentId, semester);
             return CreatedAtAction(nameof(GetSemester), new { studentId, semesterId = result.Id }, result);
         }
