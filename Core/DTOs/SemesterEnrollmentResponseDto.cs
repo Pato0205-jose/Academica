@@ -1,4 +1,4 @@
-namespace InscripcionUniAPI.Dtos
+namespace InscripcionUniAPI.Core.DTOs
 {
     public class SemesterEnrollmentResponseDto
     {
@@ -8,13 +8,5 @@ namespace InscripcionUniAPI.Dtos
         public string Term { get; set; } = string.Empty;
         public int MaxCreditHours { get; set; }
         public List<CourseDto> Courses { get; set; } = new();
-    }
-
-    public class CourseDto
-    {
-        public int Id { get; set; }
-        public string Code { get; set; } = string.Empty;
-        public string Name { get; set; } = string.Empty;
-        public int CreditHours { get; set; }
     }
 }

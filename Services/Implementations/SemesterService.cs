@@ -53,18 +53,19 @@ namespace InscripcionUniAPI.Services.Implementations
             if (course == null)
                 throw new KeyNotFoundException($"Course with id {courseId} not found.");
 
-            // Aquí asumes que tienes una entidad puente entre semestre y curso, como SemesterCourse
-            var semesterCourse = new SemesterCourse
+            // Crear la relación entre semestre y curso
+            var enrolledCourse = new EnrolledCourse
             {
                 SemesterEnrollmentId = semesterId,
                 CourseId = courseId,
                 CreditHours = course.CreditHours
             };
 
-            _context.SemesterCourse.Add(semesterCourse);
+            _context.EnrolledCourses.Add(enrolledCourse);
             await _context.SaveChangesAsync();
 
-            return semester;
+            // Recargar el semestre con los cursos para devolver la respuesta actualizada
+            return await GetByIdAsync(semesterId);
         }
     }
 }

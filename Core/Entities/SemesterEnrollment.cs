@@ -23,25 +23,6 @@ namespace InscripcionUniAPI.Core.Entities
         // Navegación
         public Student? Student { get; set; }
 
-        public ICollection<SemesterCourse> Courses { get; set; } = new List<SemesterCourse>();
-    }
-
-    public class SemesterCourse
-    {
-        public int Id { get; set; }
-
-        [Required]
-        public int SemesterEnrollmentId { get; set; }
-
-        [Required]
-        public int CourseId { get; set; }
-
-        [Required]
-        public int CreditHours { get; set; }
-
-        // Navegación
-        public SemesterEnrollment? SemesterEnrollment { get; set; }
-
-        public Course? Course { get; set; }
+        public ICollection<EnrolledCourse> Courses { get; set; } = new List<EnrolledCourse>();
     }
 }
