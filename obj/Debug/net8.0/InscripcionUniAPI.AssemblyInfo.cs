@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("InscripcionUniAPI")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+1cb326dfa0b8dd15ed2c1ef732d08591c372e7f7")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+fe70dcdc6e0834b60e16bdd12b8f9b51d341cfb8")]
 [assembly: System.Reflection.AssemblyProductAttribute("InscripcionUniAPI")]
 [assembly: System.Reflection.AssemblyTitleAttribute("InscripcionUniAPI")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
