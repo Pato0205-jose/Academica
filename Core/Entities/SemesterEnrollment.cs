@@ -1,32 +1,20 @@
-using System.ComponentModel.DataAnnotations;
-using Microsoft.EntityFrameworkCore;
-using InscripcionUniAPI.Core.Exceptions;
+using System.Collections.Generic;
 
 namespace InscripcionUniAPI.Core.Entities
 {
-    [Index(nameof(StudentId), nameof(Year), nameof(Term), IsUnique = true)]
     public class SemesterEnrollment
     {
         public int Id { get; set; }
+
+        // FK al estudiante
         public int StudentId { get; set; }
-        public ushort Year { get; set; }
-        [Required]
-        public string Term { get; set; } = default!;
+
+        public ushort Year { get; set; }          // 2023, 2024, 2025…
+        public string Term { get; set; } = null!; // "Primavera", "Otoño", etc.
         public byte MaxCreditHours { get; set; } = 21;
 
+        // Propiedades de navegación
+        public Student? Student { get; set; }
         public List<EnrolledCourse> Courses { get; set; } = new();
-
-        public void AddCourse(Course course)
-        {
-            var total = Courses.Sum(c => c.CreditHours) + course.CreditHours;
-            if (total > MaxCreditHours)
-                throw new BusinessRuleViolationException($"Se excede el límite de {MaxCreditHours} créditos.");
-
-            Courses.Add(new EnrolledCourse
-            {
-                CourseId = course.Id,
-                CreditHours = course.CreditHours
-            });
-        }
     }
 }
