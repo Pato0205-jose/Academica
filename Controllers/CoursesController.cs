@@ -1,11 +1,13 @@
 using InscripcionUniAPI.Core.Entities;
 using InscripcionUniAPI.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace InscripcionUniAPI.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class CoursesController : ControllerBase
     {
         private readonly ICourseService _service;

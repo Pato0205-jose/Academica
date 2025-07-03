@@ -1,11 +1,13 @@
 using InscripcionUniAPI.Core.Entities;
 using InscripcionUniAPI.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace InscripcionUniAPI.Controllers
 {
     [ApiController]
     [Route("api/students/{studentId:int}/semesters")]
+    [Authorize]
     public class SemestersController : ControllerBase
     {
         private readonly ISemesterService _service;
